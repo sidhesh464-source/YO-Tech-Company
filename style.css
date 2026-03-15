@@ -385,15 +385,58 @@ a {
 
 .hamburger {
     display: none;
-    cursor: pointer;
 }
 
-.hamburger .bar {
-    width: 25px;
-    height: 2px;
-    background: var(--text-primary);
-    margin: 5px 0;
-    transition: var(--transition);
+/* Bottom Bar Mobile Optimization */
+@media screen and (max-width: 768px) {
+    .navbar {
+        width: 98%;
+        max-width: 550px;
+        min-width: unset;
+        bottom: 15px;
+        padding: 5px 12px;
+    }
+
+    .nav-container {
+        gap: 8px;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .logo {
+        display: none;
+    }
+
+    .nav-links {
+        gap: 12px;
+        margin-right: auto;
+    }
+
+    .nav-text {
+        display: none; /* Hide text on mobile to make room for buttons */
+    }
+
+    .nav-buttons {
+        margin-left: 0;
+        gap: 5px;
+    }
+
+    .nav-buttons .btn {
+        padding: 8px 10px;
+        font-size: 0.7rem;
+        border-radius: 40px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .nav-links {
+        gap: 8px;
+    }
+    
+    .nav-buttons .btn {
+        padding: 6px 8px;
+        font-size: 0.65rem;
+    }
 }
 
 /* ==============================
