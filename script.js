@@ -30,44 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // -------------------------
-    // Typing Effect Logic
-    // -------------------------
-    const typeEffectEl = document.querySelector('.type-effect');
-    const words = ["Digital Experiences", "Web Applications", "Mobile Solutions", "Custom Software", "Future Platforms"];
-    let wordIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
-    let typingSpeed = 100;
-
-    function typeEffect() {
-        const currentWord = words[wordIndex];
-        
-        if (isDeleting) {
-            typeEffectEl.textContent = currentWord.substring(0, charIndex - 1);
-            charIndex--;
-            typingSpeed = 50;
-        } else {
-            typeEffectEl.textContent = currentWord.substring(0, charIndex + 1);
-            charIndex++;
-            typingSpeed = 150;
-        }
-
-        // If word is completely typed
-        if (!isDeleting && charIndex === currentWord.length) {
-            typingSpeed = 2000; // Pause at end of word
-            isDeleting = true;
-        } else if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            wordIndex = (wordIndex + 1) % words.length;
-            typingSpeed = 500; // Pause before next word starts
-        }
-
-        setTimeout(typeEffect, typingSpeed);
-    }
-    
-    // Initialize Typing Effect
-    if (typeEffectEl) setTimeout(typeEffect, 1000);
 
     // -------------------------
     // Accordion Logic
@@ -90,31 +52,61 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // -------------------------
+    // Unique Interaction: Bento Spotlight
+    // -------------------------
+    const bentoGrid = document.querySelector('.bento-services');
+    if (bentoGrid) {
+        bentoGrid.addEventListener('mousemove', (e) => {
+            const cards = bentoGrid.querySelectorAll('.bento-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    }
+
+    // -------------------------
+    // Unique Interaction: Magnetic Buttons
+    // -------------------------
+    const magneticBtns = document.querySelectorAll('.btn-primary, .logo');
+    magneticBtns.forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+        });
+
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = `translate(0, 0)`;
+        });
+    });
+
+    // -------------------------
     // Scroll Reveal / Intersect Observer
     // -------------------------
     const observerOptions = {
         root: null,
         rootMargin: '0px',
-        threshold: 0.15
+        threshold: 0.1
     };
 
     const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Add a class that we can hook into via CSS, or just mutate styles direct here
-                entry.target.style.opacity = "1";
-                entry.target.style.transform = "translateY(0)";
+                entry.target.classList.add('revealed');
                 observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    // Apply initial styles for elements to be revealed
-    const revealElements = document.querySelectorAll('.service-card, .portfolio-card, .section-top, .why-content, .stats-row');
+    const revealElements = document.querySelectorAll('.bento-card, .portfolio-card, .section-top, .why-content, .stats-row, .about-grid');
     revealElements.forEach(el => {
-        el.style.opacity = "0";
-        el.style.transform = "translateY(40px)";
-        el.style.transition = "all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)";
+        el.classList.add('reveal-init');
         observer.observe(el);
     });
     
@@ -127,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 e.preventDefault();
-                const headerOffset = 80;
+                const headerOffset = 100;
                 const elementPosition = targetElement.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
   
@@ -139,47 +131,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-// -------------------------
-// Team Modal Logic
-// -------------------------
-const teamModal = document.getElementById('team-modal');
+    // -------------------------
+    // Team Modal Logic
+    // -------------------------
+    const teamModal = document.getElementById('team-modal');
 
-window.openTeamModal = function(card) {
-    const data = card.dataset;
-    
-    // Fill Modal Data
-    document.getElementById('m-photo').src = data.photo;
-    document.getElementById('m-name').textContent = data.name;
-    document.getElementById('m-role').textContent = data.role;
-    
-    // Social Links Logic (Hide LinkedIn if it's just "#")
-    const linkedinBtn = document.getElementById('m-linkedin');
-    if (data.linkedin === "#" || !data.linkedin) {
-        linkedinBtn.style.display = 'none';
-    } else {
-        linkedinBtn.style.display = 'flex';
-        linkedinBtn.href = data.linkedin;
+    window.openTeamModal = function(card) {
+        const data = card.dataset;
+        
+        // Fill Modal Data
+        document.getElementById('m-photo').src = data.photo;
+        document.getElementById('m-name').textContent = data.name;
+        document.getElementById('m-role').textContent = data.role;
+        
+        const linkedinBtn = document.getElementById('m-linkedin');
+        if (data.linkedin === "#" || !data.linkedin) {
+            linkedinBtn.style.display = 'none';
+        } else {
+            linkedinBtn.style.display = 'flex';
+            linkedinBtn.href = data.linkedin;
+        }
+
+        document.getElementById('m-instagram').href = data.instagram;
+        document.getElementById('m-vision').textContent = data.vision;
+        document.getElementById('m-goal1').textContent = data.goal1;
+        document.getElementById('m-goal2').textContent = data.goal2;
+        document.getElementById('m-goal3').textContent = data.goal3;
+
+        teamModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     }
 
-    document.getElementById('m-instagram').href = data.instagram;
-    document.getElementById('m-vision').textContent = data.vision;
-    document.getElementById('m-goal1').textContent = data.goal1;
-    document.getElementById('m-goal2').textContent = data.goal2;
-    document.getElementById('m-goal3').textContent = data.goal3;
+    window.closeTeamModal = function() {
+        teamModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 
-    // Show Modal
-    teamModal.style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Stop background scrolling
-}
-
-window.closeTeamModal = function() {
-    teamModal.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Restore scrolling
-}
-
-// Close modal when clicking outside content
-window.addEventListener('click', (e) => {
-    if (e.target === teamModal) closeTeamModal();
-});
-
+    window.addEventListener('click', (e) => {
+        if (e.target === teamModal) closeTeamModal();
+    });
 });
